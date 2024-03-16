@@ -4,6 +4,7 @@ import os
 #check operating system to issue the correct commands
 os_type = os.name
 
+
 #check for all devices on the local network
 
 #get hostname of own device
