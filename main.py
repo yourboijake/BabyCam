@@ -5,15 +5,20 @@ import server, client
 
 #check operating system to issue the correct commands
 os_type = os.name
-
-
-#check for all devices on the local network
-
-#get hostname of own device
-hostname = subprocess.run('hostname', shell=True, capture_output=True, text=True)
-hostname_ip = subprocess.run('hostname -I', shell=True, capture_output=True, text=True)
-hostname_ip_addr = hostname_ip.stdout.split(' ')[0]
-hostname_ip_prefix = hostname_ip_addr.split('.')[0]
+if os_type == 'posix':
+    #get hostname of own device
+    hostname = subprocess.run('hostname', shell=True, capture_output=True, text=True)
+    hostname_ip = subprocess.run('hostname -I', shell=True, capture_output=True, text=True)
+    hostname_ip_addr = hostname_ip.stdout.split(' ')[0]
+    hostname_ip_prefix = hostname_ip_addr.split('.')[0]
+    nmap_cmd = f'sudo nmap -sn {hostname_ip_addr}/24'
+else:
+    hostname = subprocess.run('hostname', shell=True, capture_output=True, text=True)
+    hostname_ip = subprocess.run('ipconfig', shell=True, capture_output=True, text=True)
+    hostname_ip_addr = [hn for hn in hostname_ip.stdout.split(' ') if 'IPv4 Address' in hn][0]
+    hostname_ip_addr = re.findall('[0-9]+.[0-9]+.[0-9]+.[0-9]+', hostname_ip_addr)[0]
+    hostname_ip_prefix = hostname_ip_addr.split('.')[0]
+    nmap_cmd = f'nmap -sn {hostname_ip_addr}/24'
 
 print('choose to enter server or client mode, or exit program (type "exit")')
 while True:
@@ -21,7 +26,6 @@ while True:
 
     if mode == 'client':
         #run command to get all IPs of network devices
-        nmap_cmd = f'sudo nmap -sn {hostname_ip_addr}/24'
         nmap = subprocess.run(nmap_cmd, shell=True, capture_output=True, text=True)
         local_ip_scans = [x for x in nmap.stdout.split('\n') if 'Nmap scan report' in x]
 
@@ -53,4 +57,3 @@ while True:
     elif mode == 'exit': break
     else:
         print('mode not valid. please enter again')
-
