@@ -27,3 +27,5 @@ def run_client(server_ip):
         if cv2.waitKey(1) == 13:
             break
     cv2.destroyAllWindows()
+    client_socket.close()
+    print('closed client socket')
