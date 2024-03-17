@@ -18,10 +18,11 @@ def run_server():
         ret, frame = cap.read()
         frame_data = pickle.dumps(frame)
         client_socket.sendall(struct.pack("Q", len(frame_data)))
-        print(len(frame_data), struct.pack("Q", len(frame_data)))
         client_socket.sendall(frame_data)
         cv2.imshow('Server', frame)
         if cv2.waitKey(1) == 13:
             break
     cap.release()
     cv2.destroyAllWindows()
+    server_socket.close()
+    print('closed server socket')

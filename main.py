@@ -15,17 +15,18 @@ if os_type == 'posix':
 else:
     hostname = subprocess.run('hostname', shell=True, capture_output=True, text=True)
     hostname_ip = subprocess.run('ipconfig', shell=True, capture_output=True, text=True)
-    hostname_ip_addr = [hn for hn in hostname_ip.stdout.split(' ') if 'IPv4 Address' in hn][0]
+    hostname_ip_addr = [hn for hn in hostname_ip.stdout.split('\n') if 'IPv4 Address' in hn][0]
     hostname_ip_addr = re.findall('[0-9]+.[0-9]+.[0-9]+.[0-9]+', hostname_ip_addr)[0]
     hostname_ip_prefix = hostname_ip_addr.split('.')[0]
     nmap_cmd = f'nmap -sn {hostname_ip_addr}/24'
 
-print('choose to enter server or client mode, or exit program (type "exit")')
+
 while True:
-    mode = input('>')
+    mode = input('choose to enter server or client mode, or exit program (type "exit")\n>')
 
     if mode == 'client':
         #run command to get all IPs of network devices
+        print('looking for IPs in local network...')
         nmap = subprocess.run(nmap_cmd, shell=True, capture_output=True, text=True)
         local_ip_scans = [x for x in nmap.stdout.split('\n') if 'Nmap scan report' in x]
 
