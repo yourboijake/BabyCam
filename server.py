@@ -1,4 +1,5 @@
 import cv2, socket, pickle, struct
+from datetime import datetime, timedelta
 
 def run_server():
 
@@ -14,11 +15,19 @@ def run_server():
 
     #start video capture, and send to client
     cap = cv2.VideoCapture(0)
+    dumps, qs, framesends = [], [], []
     while True:
         ret, frame = cap.read()
+        t1 = datetime.now()
         frame_data = pickle.dumps(frame)
+        dumps.append((datetime.now() - t1).microseconds)
+        
+        t1 = datetime.now()
         client_socket.sendall(struct.pack("Q", len(frame_data)))
+        qs.append((datetime.now() - t1).microseconds)
+        
         client_socket.sendall(frame_data)
+        framesends.append((datetime.now() - t1).microseconds)
         cv2.imshow('Server', frame)
         if cv2.waitKey(1) == 13:
             break
@@ -26,3 +35,6 @@ def run_server():
     cv2.destroyAllWindows()
     server_socket.close()
     print('closed server socket')
+    print('avg dump time: ', sum(dumps) / len(dumps))
+    print('avg q time: ', sum(qs) / len(qs))
+    print('avg framesend time: ', sum(framesends) / len(framesends))
