@@ -21,7 +21,7 @@ fps,st,frames_to_count,cnt = (0,0,20,0)
 while True:
 	msg,client_addr = server_socket.recvfrom(BUFF_SIZE)
 	print('GOT connection from ',client_addr)
-	WIDTH=800
+	WIDTH=400
 	resizes, imencodes, b64encodes, framesends = [], [], [], []
 	while(vid.isOpened()):
 		_,frame = vid.read()
