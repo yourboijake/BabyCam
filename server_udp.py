@@ -22,12 +22,12 @@ fps,st,frames_to_count,cnt = (0,0,20,0)
 while True:
 	msg,client_addr = server_socket.recvfrom(BUFF_SIZE)
 	print('GOT connection from ',client_addr)
-	WIDTH=400
+	WIDTH=800
 	resizes, imencodes, b64encodes, framesends = [], [], [], []
 	while(vid.isOpened()):
 		_,frame = vid.read()
 		frame = imutils.resize(frame,width=WIDTH)
-		encoded,buffer = cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,95])
+		encoded,buffer = cv2.imencode('.jpg',frame,[cv2.IMWRITE_JPEG_QUALITY,90])
 		message = base64.b64encode(buffer)
 		print(len(buffer), type(buffer))
 		server_socket.sendto(message,client_addr)

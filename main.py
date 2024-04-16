@@ -52,7 +52,7 @@ while True:
     elif mode == 'server':
         print('running server, accessible to clients under IP addr:', hostname_ip_addr)
         try:
-            server.run_server()
+            server.run_server_tcp()
         except Exception as e:
             print('failed with error:', e)
     elif mode == 'exit': break

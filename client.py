@@ -5,8 +5,12 @@ def run_client(server_ip):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((server_ip, 8888))
 
+    #get size of frames for session metadata
     data = b""
     payload_size = struct.calcsize("Q")
+    framesize_packet = client_socket.recv(4 * 1024)
+    framesize = struct.unpack("Q", framesize_packet)[0]
+
     while True:
         while len(data) < payload_size:
             packet = client_socket.recv(4 * 1024)  # 4K buffer size
@@ -15,10 +19,7 @@ def run_client(server_ip):
             data += packet
         if not data:
             break
-        packed_msg_size = data[:payload_size]
-        data = data[payload_size:]
-        msg_size = struct.unpack("Q", packed_msg_size)[0]
-        while len(data) < msg_size:
+        while len(data) < framesize:
             data += client_socket.recv(4 * 1024)  # 4K buffer size
         frame_data = data[:msg_size]
         data = data[msg_size:]
