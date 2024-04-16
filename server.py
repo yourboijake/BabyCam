@@ -4,11 +4,12 @@ import imutils
 import base64
 import time
 
-def run_server():
+def run_server_udp():
 
     #declare socket
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    server_socket.bind(('0.0.0.0', 8888))
+    BUFF_SIZE = 65536
+    server_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+    server_socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,BUFF_SIZE)
 
     #accept connection from 
     server_socket.listen(5)
@@ -59,26 +60,6 @@ def run_server():
                 pass
         cnt+=1
 
-    ''' 
-    this method uses TCP packets, replaced by UDP method above
-    while True:
-        ret, frame = cap.read()
-        t1 = datetime.now()
-        frame_data = pickle.dumps(frame)
-        shapes.append((frame.shape, len(frame_data)))
-        dumps.append((datetime.now() - t1).microseconds)
-        
-        t1 = datetime.now()
-        client_socket.sendall(struct.pack("Q", len(frame_data)))
-        qs.append((datetime.now() - t1).microseconds)
-        
-        t1 = datetime.now()
-        client_socket.sendall(frame_data)
-        framesends.append((datetime.now() - t1).microseconds)
-        cv2.imshow('Server', frame)
-        if cv2.waitKey(1) == 13:
-            break
-    '''
 #    resizes, imencodes, b64encodes, framesends = [], [], [], []
 
     cap.release()
@@ -89,3 +70,40 @@ def run_server():
     print('avg q time: ', sum(imencodes) / len(imencodes))
     print('avg b64 encode time: ', sum(b64encodes) / len(b64encodes))
     print('avg framesend time: ', sum(framesends) / len(framesends))
+
+def run_server_tcp():
+    #declare socket
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('0.0.0.0', 8888))
+
+    #accept connection
+    server_socket.listen(5)
+    print("server is listening")
+    client_socket, client_address = server_socket.accept()
+    print(f"connection from {client_address} accepted")
+
+    cap = cv2.VideoCapture(0)
+    _, testframe = cap.read()
+    testframe_data = pickle.dumps(testframe)
+    client_socket.sendall(struct.pack("Q", len(testframe_data)))
+
+    shapes, framesends = [], []
+    while True:
+        _, frame = cap.read()
+        frame_data = pickle.dumps(frame)
+        shapes.append((frame.shape, len(frame_data)))
+            
+        t1 = datetime.now()
+        client_socket.sendall(frame_data)
+        framesends.append((datetime.now() - t1).microseconds)
+        cv2.imshow('Server', frame)
+        if cv2.waitKey(1) == 13:
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+    server_socket.close()
+    print('closed server socket')
+    print('avg frame send time: ', sum(framesends) / len(framesends))
+    print(shapes)
+
