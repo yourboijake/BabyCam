@@ -46,7 +46,7 @@ while True:
         
         server_ip = input('select an IP to connect to as client\n>')
         try:
-            client.run_client(server_ip=server_ip)
+            client.run_client_udp(server_ip=server_ip)
         except Exception as e:
             print('failed with error:', e)   
     elif mode == 'server':

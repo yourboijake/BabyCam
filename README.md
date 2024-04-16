@@ -16,5 +16,5 @@ issues to improve:
     - also, the TCP version uses pickle, and struct packing. Can we just use b64 string encoding? would that be faster?
 - add audio
 - CLI shows IP addresses, not human readable names
-- port is assumed -> need to assign it dynamically
+- port is assumed -> need to assign it dynamically (may need to set this up using TCP at beginning of streaming session)
 - sometimes the client side IP scanning doesn't return all local devices
