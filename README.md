@@ -18,3 +18,13 @@ issues to improve:
 - CLI shows IP addresses, not human readable names
 - port is assumed -> need to assign it dynamically (may need to set this up using TCP at beginning of streaming session)
 - sometimes the client side IP scanning doesn't return all local devices
+
+
+additional misc:
+- 2 way audio logic: 
+    - swap port and IP information
+    - set up listener first (pyaudio input + client-side socket), assign as daemon thread
+    - set up server-side output (pyaudio record + server-side socket)
+    - run infinite while loop, sending recorded audio frames to output port
+- example code: https://github.com/engineer-man/youtube/blob/master/141/client.py 
+- open question: does it need to be separate ports for 2-way audio streaming?
