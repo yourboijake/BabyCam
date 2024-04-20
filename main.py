@@ -20,7 +20,7 @@ else:
     hostname_ip_prefix = hostname_ip_addr.split('.')[0]
     nmap_cmd = f'nmap -sn {hostname_ip_addr}/24'
 
-
+port = input('which port do you want to use? ')
 while True:
     mode = input('choose to enter server or client mode, or exit program (type "exit")\n>')
 
@@ -46,13 +46,13 @@ while True:
         
         server_ip = input('select an IP to connect to as client\n>')
         try:
-            client.run_client_udp(server_ip=server_ip)
+            client.run_client_udp(server_ip=server_ip, port=port)
         except Exception as e:
             print('failed with error:', e)   
     elif mode == 'server':
         print('running server, accessible to clients under IP addr:', hostname_ip_addr)
         try:
-            server.run_server_udp()
+            server.run_server_udp(port=port)
         except Exception as e:
             print('failed with error:', e)
     elif mode == 'exit': break
