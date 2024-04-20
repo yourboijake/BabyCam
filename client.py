@@ -3,17 +3,13 @@ import numpy as np
 import time
 import base64
 
-def run_client_udp(server_ip):
+def run_client_udp(server_ip, port):
     BUFF_SIZE = 65536
     client_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     client_socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,BUFF_SIZE)
-    host_name = socket.gethostname()
-    host_ip = server_ip
-    print(host_ip)
-    port = 9999
     message = b'Hello'
 
-    client_socket.sendto(message,(host_ip,port))
+    client_socket.sendto(message,(server_ip,port))
     fps,st,frames_to_count,cnt = (0,0,20,0)
     while True:
         packet,_ = client_socket.recvfrom(BUFF_SIZE)
