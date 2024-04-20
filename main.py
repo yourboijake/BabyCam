@@ -1,7 +1,11 @@
 import subprocess
+import threading
 import os
 import re
-import server, client
+from server import run_server_udp
+from client import run_client_udp
+from server_audio import stream_out
+from client_audio import stream_in
 
 #check operating system to issue the correct commands
 os_type = os.name
@@ -20,7 +24,8 @@ else:
     hostname_ip_prefix = hostname_ip_addr.split('.')[0]
     nmap_cmd = f'nmap -sn {hostname_ip_addr}/24'
 
-port = input('which port do you want to use? ')
+video_port = int(input('which port do you want to use for video? '))
+audio_port = int(input('which port do you want to use for audio? '))
 while True:
     mode = input('choose to enter server or client mode, or exit program (type "exit")\n>')
 
@@ -46,13 +51,25 @@ while True:
         
         server_ip = input('select an IP to connect to as client\n>')
         try:
-            client.run_client_udp(server_ip=server_ip, port=port)
+            video_thread = threading.Thread(target=run_client_udp, args=(server_ip, video_port,))
+            audio_thread = threading.Thread(target=stream_in, args=(server_ip, audio_port,))
+            video_thread.start()
+            audio_thread.start()
+            video_thread.join()
+            audio_thread.join()
+            #run_client_udp(server_ip=server_ip, port=video_port)
         except Exception as e:
             print('failed with error:', e)   
     elif mode == 'server':
         print('running server, accessible to clients under IP addr:', hostname_ip_addr)
         try:
-            server.run_server_udp(port=port)
+            #run_server_udp(port=video_port)
+            video_thread = threading.Thread(target=run_server_udp, args=(video_port,))
+            audio_thread = threading.Thread(target=stream_out, args=(audio_port,))
+            video_thread.start()
+            audio_thread.start()
+            video_thread.join()
+            audio_thread.join()
         except Exception as e:
             print('failed with error:', e)
     elif mode == 'exit': break

@@ -1,7 +1,7 @@
 import socket, pyaudio
 import keyboard
 
-def stream_in(port, server_ip):
+def stream_in(server_ip, port):
 
     #set up client side socket
     BUFF_SIZE = 65536
