@@ -2,6 +2,8 @@ import subprocess
 import threading
 import os
 import re
+from client import Client
+from server import Server
 from server import run_server_udp
 from client import run_client_udp
 from server_audio import stream_out
@@ -51,6 +53,7 @@ while True:
         
         server_ip = input('select an IP to connect to as client\n>')
         try:
+            c = Client()
             video_thread = threading.Thread(target=run_client_udp, args=(server_ip, video_port,))
             audio_thread = threading.Thread(target=stream_in, args=(server_ip, audio_port,))
             video_thread.start()

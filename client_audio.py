@@ -7,7 +7,7 @@ def stream_in(server_ip, port):
     BUFF_SIZE = 65536
     client_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
     client_socket.setsockopt(socket.SOL_SOCKET,socket.SO_RCVBUF,BUFF_SIZE)
-    print(server_ip)
+    print(server_ip, port)
     message = b'Hello'
 
     #establish connection with server
